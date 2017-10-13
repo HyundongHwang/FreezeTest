@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -51,20 +52,26 @@ namespace FreezeTest
 
         private void BtnNext_Click(object sender, RoutedEventArgs e)
         {
-            var idx = new Random().Next(_imgUrlList.Count);
-            var url = _imgUrlList[idx];
-            var client = new WebClient();
-            var resBytes = client.DownloadData(url);
-
-            using (var ms = new MemoryStream(resBytes))
+            try
             {
-                var bi = new BitmapImage();
-                bi.BeginInit();
-                bi.CacheOption = BitmapCacheOption.OnLoad;
-                bi.StreamSource = ms;
-                bi.EndInit();
-                //bi.Freeze();
-                this.ImgObj.Source = bi;
+                var idx = new Random().Next(_imgUrlList.Count);
+                var url = _imgUrlList[idx];
+                var client = new WebClient();
+                var resBytes = client.DownloadData(url);
+
+                using (var ms = new MemoryStream(resBytes))
+                {
+                    var bi = new BitmapImage();
+                    bi.BeginInit();
+                    bi.StreamSource = ms;
+                    bi.EndInit();
+                    bi.Freeze();
+                    this.ImgObj.Source = bi;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
             }
         }
     }
